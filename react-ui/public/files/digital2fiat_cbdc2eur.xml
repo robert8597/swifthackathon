@@ -1,0 +1,63 @@
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09">
+  <FIToFICstmrCdtTrf>
+    <GrpHdr>
+      <MsgId>CBDC2EUR-20250722-0002</MsgId>
+      <CreDtTm>2025-07-22T12:05:00Z</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <SttlmMtd>CLRG</SttlmMtd>
+    </GrpHdr>
+    <CdtTrfTxInf>
+      <PmtId>
+        <InstrId>CBDC2EUR-0002</InstrId>
+        <EndToEndId>E2E-0002</EndToEndId>
+        <TxId>TX-987654321</TxId>
+		<UETR>70c2d1e5-0c73-44ad-89b5-ac4fd8284fc1</UETR>
+      </PmtId>
+      <PmtTpInf>
+        <InstrPrty>NORM</InstrPrty>
+        <SvcLvl>
+          <Cd>NURG</Cd>
+        </SvcLvl>
+        <CtgyPurp>
+          <Prtry>CBDC2FIAT</Prtry>
+        </CtgyPurp>
+      </PmtTpInf>
+      <IntrBkSttlmAmt Ccy="EUR">5000.00</IntrBkSttlmAmt>
+      <ChrgBr>SLEV</ChrgBr>
+      <Dbtr>
+        <Nm>Central Bank</Nm>
+        <Id>
+          <OrgId>
+            <LEI>5493001KJTIIGC8Y1R12</LEI>
+          </OrgId>
+        </Id>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <IBAN>CBDC00000000000001</IBAN>
+        </Id>
+      </DbtrAcct>
+      <CdtrAgt>
+        <FinInstnId>
+          <BICFI>COMMUS33XXX</BICFI>
+        </FinInstnId>
+      </CdtrAgt>
+      <Cdtr>
+        <Nm>Commercial Bank</Nm>
+        <Id>
+          <OrgId>
+            <LEI>213800D1EI4B9WTWWD28</LEI>
+          </OrgId>
+        </Id>
+      </Cdtr>
+      <CdtrAcct>
+        <Id>
+          <IBAN>US00000000000003</IBAN>
+        </Id>
+      </CdtrAcct>
+      <RmtInf>
+        <Ustrd>CBDC to USD</Ustrd>
+      </RmtInf>
+    </CdtTrfTxInf>
+  </FIToFICstmrCdtTrf>
+</Document>

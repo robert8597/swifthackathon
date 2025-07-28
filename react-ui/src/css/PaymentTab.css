@@ -1,0 +1,144 @@
+/* PaymentTab.css */
+.payment-tab-root {
+    width: 100%;
+    min-height: 100vh;
+    background: #fff;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 48px;
+}
+
+.payment-tab-header {
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-tab-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.payment-tab-cols-title {
+    margin-bottom: 24px;
+    font-weight: 600;
+    color: #1976d2;
+    display: flex;
+    align-items: center;
+}
+
+.payment-tab-form-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 200px;
+    width: 100%;
+}
+
+/* Compact PaymentTab-Form */
+.payment-tab-form {
+    width: 320px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
+    padding: 18px 12px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.payment-tab-form-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1976d2;
+    margin-bottom: 6px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.payment-tab-form-fields {
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*gap: 6px;*/
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.payment-tab-form-field {
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*gap: 2px;*/
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 48%;
+    min-width: 140px;
+}
+
+.payment-tab-form-label {
+    margin-bottom: 2px;
+    font-weight: 500;
+    font-size: 13px;
+    color: #333;
+}
+
+.payment-tab-form-input {
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    font-size: 13px;
+    background: #f5f7fa;
+    color: #222;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.payment-tab-form-input:focus {
+    border: 1.5px solid #1976d2;
+}
+
+.payment-tab-form-button {
+    margin-top: 10px;
+    padding: 8px 0;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(25, 118, 210, 0.08);
+    transition: background 0.2s;
+}
+
+.payment-tab-form-button:hover,
+.payment-tab-form-button:focus {
+    background: #125ea2;
+}
+
+.payment-tab-form-outer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 24px;
+}
+
+.payment-tab-table-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 60vh;
+    width: 100%;
+    margin-top: 48px;
+}

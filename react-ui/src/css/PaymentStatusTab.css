@@ -1,0 +1,72 @@
+/* PaymentStatusTab.css */
+.pro-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 41, 59, 0.45);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.pro-modal-content {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(30,41,59,0.18), 0 1.5px 6px rgba(30,41,59,0.08);
+    max-width: 1200px;
+    width: 98vw;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.pro-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 32px 12px 32px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #f8fafc;
+}
+
+.pro-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1976d2;
+}
+
+.pro-modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+.pro-modal-close:hover {
+    color: #1976d2;
+}
+
+.pro-modal-body {
+    display: flex;
+    gap: 32px;
+    padding: 28px 32px 32px 32px;
+    background: #fff;
+}
+
+@media (max-width: 700px) {
+    .pro-modal-content, .pro-modal-body {
+        flex-direction: column;
+        gap: 18px;
+        padding: 18px 10px;
+        max-width: 98vw;
+    }
+}

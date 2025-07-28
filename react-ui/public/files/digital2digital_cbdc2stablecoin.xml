@@ -1,0 +1,61 @@
+<!-- Digital to Digital : CBDC → Stablecoin -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09">
+  <FIToFICstmrCdtTrf>
+    <GrpHdr>
+      <MsgId>CBDC2STBL-20250722-0001</MsgId>
+      <CreDtTm>2025-07-22T12:00:00Z</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <SttlmMtd>CLRG</SttlmMtd>
+    </GrpHdr>
+    <CdtTrfTxInf>
+      <PmtId>
+        <InstrId>CBDC2STBL-0001</InstrId>
+        <EndToEndId>E2E-0001</EndToEndId>
+        <TxId>TX-123456789</TxId>
+		<UETR>70c2d1e5-0c73-44ad-89b5-ac4fd8284fc1</UETR>
+      </PmtId>
+      <PmtTpInf>
+        <InstrPrty>NORM</InstrPrty>
+        <CtgyPurp>
+          <Prtry>CBDC2STBL</Prtry>
+        </CtgyPurp>
+      </PmtTpInf>
+      <IntrBkSttlmAmt Ccy="EUR">1000.00</IntrBkSttlmAmt>
+      <ChrgBr>SLEV</ChrgBr>
+      <Dbtr>
+        <Nm>Central Bank</Nm>
+        <Id>
+          <OrgId>
+            <LEI>5493001KJTIIGC8Y1R12</LEI>
+          </OrgId>
+        </Id>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <IBAN>CBDC00000000000001</IBAN>
+        </Id>
+      </DbtrAcct>
+      <CdtrAgt>
+        <FinInstnId>
+          <BICFI>STBLDEFFXXX</BICFI>
+        </FinInstnId>
+      </CdtrAgt>
+      <Cdtr>
+        <Nm>Stablecoin Issuer</Nm>
+        <Id>
+          <OrgId>
+            <LEI>2549007FL45M2RZCJ894</LEI>
+          </OrgId>
+        </Id>
+      </Cdtr>
+      <CdtrAcct>
+        <Id>
+          <IBAN>STBL00000000000002</IBAN>
+        </Id>
+      </CdtrAcct>
+      <RmtInf>
+        <Ustrd>CBDC to Stablecoin transfer</Ustrd>
+      </RmtInf>
+    </CdtTrfTxInf>
+  </FIToFICstmrCdtTrf>
+</Document>

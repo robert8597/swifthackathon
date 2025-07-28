@@ -1,0 +1,62 @@
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09">
+  <FIToFICstmrCdtTrf>
+    <GrpHdr>
+      <MsgId>USD2CBDC-20250722-0003</MsgId>
+      <CreDtTm>2025-07-22T12:10:00Z</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <SttlmMtd>CLRG</SttlmMtd>
+    </GrpHdr>
+    <CdtTrfTxInf>
+      <PmtId>
+        <InstrId>USD2CBDC-0003</InstrId>
+        <EndToEndId>E2E-0003</EndToEndId>
+        <TxId>TX-192837465</TxId>
+      </PmtId>
+      <PmtTpInf>
+        <InstrPrty>HIGH</InstrPrty>
+        <SvcLvl>
+          <Cd>URGP</Cd>
+        </SvcLvl>
+        <CtgyPurp>
+          <Prtry>FIAT2CBDC</Prtry>
+        </CtgyPurp>
+      </PmtTpInf>
+      <IntrBkSttlmAmt Ccy="USD">7500.00</IntrBkSttlmAmt>
+      <ChrgBr>SLEV</ChrgBr>
+      <Dbtr>
+        <Nm>Commercial Bank</Nm>
+        <Id>
+          <OrgId>
+            <LEI>213800D1EI4B9WTWWD28</LEI>
+          </OrgId>
+        </Id>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <IBAN>US00000000000003</IBAN>
+        </Id>
+      </DbtrAcct>
+      <CdtrAgt>
+        <FinInstnId>
+          <BICFI>CENTUS33XXX</BICFI>
+        </FinInstnId>
+      </CdtrAgt>
+      <Cdtr>
+        <Nm>Central Bank</Nm>
+        <Id>
+          <OrgId>
+            <LEI>5493001KJTIIGC8Y1R12</LEI>
+          </OrgId>
+        </Id>
+      </Cdtr>
+      <CdtrAcct>
+        <Id>
+          <IBAN>CBDC00000000000001</IBAN>
+        </Id>
+      </CdtrAcct>
+      <RmtInf>
+        <Ustrd>USD to CBDC</Ustrd>
+      </RmtInf>
+    </CdtTrfTxInf>
+  </FIToFICstmrCdtTrf>
+</Document>

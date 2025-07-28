@@ -1,0 +1,8 @@
+{
+  "EUR": { "USD": 1.08, "GBP": 0.85, "BSD - Bahamian Dollar": 1.17 },
+  "USD": { "EUR": 0.93, "GBP": 0.79 },
+  "GBP": { "EUR": 1.18, "USD": 1.27 },
+  "USD Circle": { "USD": 1, "EUR": 0.86 },
+  "USD Tether": { "USD": 1, "EUR": 0.86 },
+  "BSD - Bahamian Dollar": { "USD": 1, "EUR": 0.855 }
+}
