@@ -1,0 +1,14 @@
+server:
+  port: 8443
+  shutdown: graceful
+  ssl:
+    client-auth: none
+spring:
+  application:
+    name: dfx-service
+
+# Configuration for the external LEI verification API
+lei:
+  api:
+    base-url: https://api.gleif.org/api/v1
+    path: /lei-records/

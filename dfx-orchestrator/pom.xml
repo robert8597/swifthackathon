@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.4</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.db.swift</groupId>
+    <artifactId>dfx-orchestrator</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>dfx-orchestrator</name>
+    <description>Service for Digital FX Orchestration using ISO 20022 message formats</description>
+
+    <modules>
+        <module>dfx-codegen</module>
+        <module>dfx-service</module>
+    </modules>
+    <properties>
+        <revision>0.0.1-SNAPSHOT</revision>
+        <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+        <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
+        <jakarta.xml-bind-api.version>4.0.2</jakarta.xml-bind-api.version>
+        <java.version>17</java.version>
+        <parent.apache.lang3.version>3.18.0</parent.apache.lang3.version>
+        <parent.threeten-jaxb-core.version>2.2.0</parent.threeten-jaxb-core.version>
+        <parent.hibernate-validator.version>9.0.1.Final</parent.hibernate-validator.version>
+        <parent.beanio.version>3.2.1</parent.beanio.version>
+        <parent.brave.version>6.1.0</parent.brave.version>
+        <parent.glassfish.jaxb.version>4.0.5</parent.glassfish.jaxb.version>
+        <parent.jackson-databind.version>2.19.1</parent.jackson-databind.version>
+        <parent.jackson-module-jakarta-xmlbind-annotations.version>2.19.2</parent.jackson-module-jakarta-xmlbind-annotations.version>
+        <parent.jaxb2-maven-plugin.version>3.3.0</parent.jaxb2-maven-plugin.version>
+        <parent.lombok.version>1.18.38</parent.lombok.version>
+        <parent.mapstruct.version>1.6.3</parent.mapstruct.version>
+        <parent.openapi-generator-maven-plugin.version>7.14.0</parent.openapi-generator-maven-plugin.version>
+        <parent.springdoc.version>2.8.9</parent.springdoc.version>
+        <parent.xmlunit-assertj.version>2.10.3</parent.xmlunit-assertj.version>
+        <parent.lombok-mapstruct-binding.version>0.2.0</parent.lombok-mapstruct-binding.version>
+
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.6.3</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>0.2.0</version>
+                        </path>
+                        <!-- other annotation processors -->
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <!-- Use a recent, stable version -->
+                <configuration>
+                    <!-- Force the JVM running tests to use an English locale -->
+                    <argLine>-Duser.language=en -Duser.country=US</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

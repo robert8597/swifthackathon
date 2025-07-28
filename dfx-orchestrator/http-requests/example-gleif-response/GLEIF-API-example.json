@@ -1,0 +1,480 @@
+{
+  "meta": {
+    "goldenCopy": { "publishDate": "2021-11-11T12:56:00Z" },
+    "pagination": {
+      "currentPage": 1,
+      "perPage": 15,
+      "from": 1,
+      "to": 3,
+      "total": 3,
+      "lastPage": 1
+    }
+  },
+  "links": {
+    "first": "https://api.gleif.org/api/v1/lei-records?page%5Bnumber%5D=1&page%5Bsize%5D=15",
+    "last": "https://api.gleif.org/api/v1/lei-records?page%5Bnumber%5D=1&page%5Bsize%5D=15"
+  },
+  "data": [
+    {
+      "type": "lei-records",
+      "id": "529900P5TAD0ABFTMV10",
+      "attributes": {
+        "lei": "529900P5TAD0ABFTMV10",
+        "entity": {
+          "legalName": { "name": "Land Hessen", "language": "de" },
+          "otherNames": [],
+          "transliteratedOtherNames": [],
+          "legalAddress": {
+            "language": "de",
+            "addressLines": ["Friedrich-Ebert-Allee 8"],
+            "addressNumber": "8",
+            "addressNumberWithinBuilding": null,
+            "mailRouting": null,
+            "city": "Wiesbaden",
+            "region": "DE-HE",
+            "country": "DE",
+            "postalCode": "65185"
+          },
+          "headquartersAddress": {
+            "language": "de",
+            "addressLines": ["Friedrich-Ebert-Allee 8"],
+            "addressNumber": "8",
+            "addressNumberWithinBuilding": null,
+            "mailRouting": null,
+            "city": "Wiesbaden",
+            "region": "DE-HE",
+            "country": "DE",
+            "postalCode": "65185"
+          },
+          "registeredAt": { "id": "RA999999", "other": null },
+          "registeredAs": null,
+          "jurisdiction": "de",
+          "category": "RESIDENT_GOVERNMENT_ENTITY",
+          "legalForm": { "id": "8888", "other": "Legal Entity of Public Law" },
+          "associatedEntity": { "lei": null, "name": null },
+          "status": "ACTIVE",
+          "expiration": { "date": null, "reason": null },
+          "successorEntity": { "lei": "8156001E5B61AE5CA946", "name": null },
+          "successorEntities": [
+            { "lei": "8156001E5B61AE5CA946" },
+            { "name": "The successor" }
+          ],
+          "creationDate": "1945-09-19T00:00:00Z",
+          "subCategory": "STATE_GOVERNMENT",
+          "otherAddresses": [],
+          "eventGroups": [
+            {
+              "groupType": "STANDALONE",
+              "events": [
+                {
+                  "validationDocuments": "SUPPORTING_DOCUMENTS",
+                  "effectiveDate": "2020-06-30T00:00:00Z",
+                  "recordedDate": "2020-08-04T12:04:01Z",
+                  "type": "MERGERS_AND_ACQUISITIONS",
+                  "status": "COMPLETED",
+                  "affectedFields": [
+                    {
+                      "value": "8156001E5B61AE5CA946",
+                      "xpath": "/lei:LEIData/lei:LEIRecords/lei:LEIRecord/lei:Entity/lei:SuccessorEntity/lei:SuccessorLEI"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "groupType": "CHANGE_LEGAL_FORM_AND_NAME",
+              "events": [
+                {
+                  "validationDocuments": "SUPPORTING_DOCUMENTS",
+                  "validationReference": "validation reference 1",
+                  "effectiveDate": "2020-08-01T22:00:00Z",
+                  "recordedDate": "2020-08-21T13:07:11Z",
+                  "type": "CHANGE_LEGAL_FORM",
+                  "status": "COMPLETED",
+                  "affectedFields": [
+                    {
+                      "value": "J3C5",
+                      "xpath": "/lei:LEIData/lei:LEIRecords/lei:LEIRecord/lei:Entity/lei:LegalForm/lei:EntityLegalFormCode"
+                    }
+                  ]
+                },
+                {
+                  "validationDocuments": "SUPPORTING_DOCUMENTS",
+                  "validationReference": "The Legal Name",
+                  "effectiveDate": "2020-08-01T22:00:00Z",
+                  "recordedDate": "2020-08-21T13:07:11Z",
+                  "type": "CHANGE_LEGAL_NAME",
+                  "status": "COMPLETED",
+                  "affectedFields": [
+                    {
+                      "value": "The Name",
+                      "xpath": "/lei:LEIData/lei:LEIRecords/lei:LEIRecord/lei:Entity/lei:LegalName"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "registration": {
+          "initialRegistrationDate": "2017-07-14T16:41:21Z",
+          "lastUpdateDate": "2021-05-25T17:07:10Z",
+          "status": "ISSUED",
+          "nextRenewalDate": "2021-07-14T16:41:21Z",
+          "managingLou": "5299000J2N45DDNE4Y28",
+          "corroborationLevel": "ENTITY_SUPPLIED_ONLY",
+          "validatedAt": { "id": "RA999999", "other": null },
+          "validatedAs": null,
+          "otherValidationAuthorities": []
+        },
+        "bic": null
+      },
+      "relationships": {
+        "managing-lou": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/managing-lou"
+          }
+        },
+        "lei-issuer": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/lei-issuer"
+          }
+        },
+        "field-modifications": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/field-modifications"
+          }
+        },
+        "direct-parent": {
+          "links": {
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/direct-parent-relationship",
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/direct-parent"
+          }
+        },
+        "ultimate-parent": {
+          "links": {
+            "reporting-exception": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/ultimate-parent-reporting-exception"
+          }
+        },
+        "direct-children": {
+          "links": {
+            "relationship-records": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/direct-child-relationships",
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/direct-children"
+          }
+        },
+        "ultimate-children": {
+          "links": {
+            "relationship-records": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/ultimate-child-relationships",
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/ultimate-children"
+          }
+        },
+        "head-office": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/head-office",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/head-office-relationship"
+          }
+        },
+        "branches": {
+          "links": {
+            "relationship-records": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/branch-relationships",
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/branches"
+          }
+        },
+        "fund-manager": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/fund-manager",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/fund-manager-relationship"
+          }
+        },
+        "managed-funds": {
+          "links": {
+            "relationship-records": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/managed-fund-relationships",
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/managed-funds"
+          }
+        },
+        "umbrella-fund": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/umbrella-fund",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/umbrella-fund-relationship"
+          }
+        },
+        "sub-funds": {
+          "links": {
+            "relationship-records": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/sub-fund-relationships",
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/sub-funds"
+          }
+        },
+        "master-fund": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/master-fund",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/master-fund-relationship"
+          }
+        },
+        "feeder-funds": {
+          "links": {
+            "relationship-records": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/feeder-fund-relationships",
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/feeder-funds"
+          }
+        },
+        "successor-entity": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/successor-entity"
+          }
+        },
+        "successor-entities": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10/successor-entities"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api.gleif.org/api/v1/lei-records/529900P5TAD0ABFTMV10"
+      }
+    },
+    {
+      "type": "lei-records",
+      "id": "5493007BPZS3LU7J0U61",
+      "attributes": {
+        "lei": "5493007BPZS3LU7J0U61",
+        "entity": {
+          "legalName": {
+            "name": "Canadian Air Transport Security Authority",
+            "language": "en"
+          },
+          "otherNames": [
+            {
+              "name": "Administration canadienne de la s\u00fbret\u00e9 du transport a\u00e9rien",
+              "language": "fr",
+              "type": "ALTERNATIVE_LANGUAGE_LEGAL_NAME"
+            }
+          ],
+          "transliteratedOtherNames": [],
+          "legalAddress": {
+            "language": "en",
+            "addressLines": [
+              "Sun Life Financial Centre",
+              "99 Bank Street",
+              "5th Floor"
+            ],
+            "addressNumber": null,
+            "addressNumberWithinBuilding": null,
+            "mailRouting": null,
+            "city": "Ottawa",
+            "region": "CA-ON",
+            "country": "CA",
+            "postalCode": "K1P 6B9"
+          },
+          "headquartersAddress": {
+            "language": "en",
+            "addressLines": [
+              "Sun Life Financial Centre",
+              "99 Bank Street",
+              "5th Floor"
+            ],
+            "addressNumber": null,
+            "addressNumberWithinBuilding": null,
+            "mailRouting": null,
+            "city": "Ottawa",
+            "region": "CA-ON",
+            "country": "CA",
+            "postalCode": "K1P 6B9"
+          },
+          "registeredAt": { "id": "RA999999", "other": null },
+          "registeredAs": null,
+          "jurisdiction": "CA",
+          "category": "RESIDENT_GOVERNMENT_ENTITY",
+          "legalForm": { "id": "8888", "other": "Crown Corporation" },
+          "associatedEntity": { "lei": null, "name": null },
+          "status": "ACTIVE",
+          "expiration": { "date": null, "reason": null },
+          "successorEntity": { "lei": null, "name": null },
+          "successorEntities": [],
+          "creationDate": "2002-04-01T00:00:00Z",
+          "subCategory": "CENTRAL_GOVERNMENT",
+          "otherAddresses": [],
+          "eventGroups": []
+        },
+        "registration": {
+          "initialRegistrationDate": "2016-11-01T02:40:00Z",
+          "lastUpdateDate": "2021-05-25T17:17:17Z",
+          "status": "ISSUED",
+          "nextRenewalDate": "2021-09-01T18:25:00Z",
+          "managingLou": "529900P5TAD0ABFTMV10",
+          "corroborationLevel": "ENTITY_SUPPLIED_ONLY",
+          "validatedAt": { "id": "RA999999", "other": null },
+          "validatedAs": null,
+          "otherValidationAuthorities": []
+        },
+        "bic": null
+      },
+      "relationships": {
+        "managing-lou": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/5493007BPZS3LU7J0U61/managing-lou"
+          }
+        },
+        "lei-issuer": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/5493007BPZS3LU7J0U61/lei-issuer"
+          }
+        },
+        "field-modifications": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/5493007BPZS3LU7J0U61/field-modifications"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api.gleif.org/api/v1/lei-records/5493007BPZS3LU7J0U61"
+      }
+    },
+    {
+      "type": "lei-records",
+      "id": "815600828BCFF72F0954",
+      "attributes": {
+        "lei": "815600828BCFF72F0954",
+        "entity": {
+          "legalName": { "name": "TANK S.R.L.", "language": "it" },
+          "otherNames": [],
+          "transliteratedOtherNames": [],
+          "legalAddress": {
+            "language": "it",
+            "addressLines": ["VIA AGNELLO"],
+            "addressNumber": "12",
+            "addressNumberWithinBuilding": null,
+            "mailRouting": null,
+            "city": "MILANO",
+            "region": "IT-MI",
+            "country": "IT",
+            "postalCode": "20121"
+          },
+          "headquartersAddress": {
+            "language": "it",
+            "addressLines": ["VIA AGNELLO 12"],
+            "addressNumber": "12",
+            "addressNumberWithinBuilding": null,
+            "mailRouting": null,
+            "city": "MILANO",
+            "region": "IT-MI",
+            "country": "IT",
+            "postalCode": "20121"
+          },
+          "registeredAt": { "id": "RA000407", "other": null },
+          "registeredAs": "11052540967",
+          "jurisdiction": "IT",
+          "category": "GENERAL",
+          "legalForm": { "id": "OV32", "other": null },
+          "associatedEntity": { "lei": null, "name": null },
+          "status": "INACTIVE",
+          "expiration": { "date": null, "reason": null },
+          "successorEntity": { "lei": "8156001E5B61AE5CA946", "name": null },
+          "successorEntities": [
+            { "lei": "8156001E5B61AE5CA946" },
+            { "name": "The successor" }
+          ],
+          "creationDate": "1945-09-19T00:00:00Z",
+          "subCategory": "STATE_GOVERNMENT",
+          "otherAddresses": [],
+          "eventGroups": [
+            {
+              "groupType": "STANDALONE",
+              "events": [
+                {
+                  "validationDocuments": "SUPPORTING_DOCUMENTS",
+                  "effectiveDate": "2020-06-30T00:00:00Z",
+                  "recordedDate": "2020-08-04T12:04:01Z",
+                  "type": "MERGERS_AND_ACQUISITIONS",
+                  "status": "COMPLETED",
+                  "affectedFields": [
+                    {
+                      "value": "8156001E5B61AE5CA946",
+                      "xpath": "/lei:LEIData/lei:LEIRecords/lei:LEIRecord/lei:Entity/lei:SuccessorEntity/lei:SuccessorLEI"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "registration": {
+          "initialRegistrationDate": "2019-11-27T15:50:10Z",
+          "lastUpdateDate": "2020-08-04T12:04:01Z",
+          "status": "RETIRED",
+          "nextRenewalDate": "2020-11-27T15:50:10Z",
+          "managingLou": "529900P5TAD0ABFTMV10",
+          "corroborationLevel": "FULLY_CORROBORATED",
+          "validatedAt": { "id": "RA000407", "other": null },
+          "validatedAs": "11052540967",
+          "otherValidationAuthorities": []
+        },
+        "bic": null
+      },
+      "relationships": {
+        "managing-lou": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/managing-lou"
+          }
+        },
+        "lei-issuer": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/lei-issuer"
+          }
+        },
+        "field-modifications": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/field-modifications"
+          }
+        },
+        "direct-parent": {
+          "links": {
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/direct-parent-relationship",
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/direct-parent"
+          }
+        },
+        "ultimate-parent": {
+          "links": {
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/ultimate-parent-relationship",
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/ultimate-parent"
+          }
+        },
+        "head-office": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/head-office",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/head-office-relationship"
+          }
+        },
+        "fund-manager": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/fund-manager",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/fund-manager-relationship"
+          }
+        },
+        "umbrella-fund": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/umbrella-fund",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/umbrella-fund-relationship"
+          }
+        },
+        "master-fund": {
+          "links": {
+            "lei-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/master-fund",
+            "relationship-record": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/master-fund-relationship"
+          }
+        },
+        "successor-entity": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/successor-entity"
+          }
+        },
+        "successor-entities": {
+          "links": {
+            "related": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954/successor-entities"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api.gleif.org/api/v1/lei-records/815600828BCFF72F0954"
+      }
+    }
+  ]
+}

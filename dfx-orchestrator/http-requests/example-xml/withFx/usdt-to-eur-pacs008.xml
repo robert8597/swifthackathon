@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09">
+    <FIToFICstmrCdtTrf>
+        <GrpHdr>
+            <MsgId>USDT2EUR-20250804-0004</MsgId>
+            <CreDtTm>2025-08-04T15:45:00Z</CreDtTm>
+            <NbOfTxs>1</NbOfTxs>
+            <SttlmInf>
+                <SttlmMtd>CLRG</SttlmMtd>
+            </SttlmInf>
+        </GrpHdr>
+        <CdtTrfTxInf>
+            <PmtId>
+                <InstrId>USDT2EUR-INSTR-0004</InstrId>
+                <EndToEndId>E2E-USDT2EUR-0004</EndToEndId>
+                <TxId>TX-USDT-EUR-002</TxId>
+            </PmtId>
+            <IntrBkSttlmAmt Ccy="XXX">7500.00</IntrBkSttlmAmt>
+            <ChrgBr>SHAR</ChrgBr>
+            <Dbtr>
+                <Nm>European Central Bank</Nm>
+                <Id>
+                    <OrgId>
+
+                        <LEI>549300DTUYXVMJXZNY75</LEI>
+                    </OrgId>
+                </Id>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <IBAN>DE89100000001234567890</IBAN>
+                </Id>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BICFI>ECBFDEFFXXX</BICFI>
+                    <LEI>549300DTUYXVMJXZNY75</LEI>
+                </FinInstnId>
+            </DbtrAgt>
+            <CdtrAgt>
+                <FinInstnId>
+                    <BICFI>DEUTDEFFXXX</BICFI>
+                    <LEI>7LTWFZYICNSX8D621K86</LEI>
+                </FinInstnId>
+            </CdtrAgt>
+            <Cdtr>
+                <Nm>DEUTSCHE BANK AKTIENGESELLSCHAFT</Nm>
+                <Id>
+                    <OrgId>
+                        <LEI>7LTWFZYICNSX8D621K86</LEI>
+                    </OrgId>
+                </Id>
+            </Cdtr>
+            <RmtInf>
+                <Ustrd>FX:USDT/EUR</Ustrd>
+            </RmtInf>
+        </CdtTrfTxInf>
+    </FIToFICstmrCdtTrf>
+</Document>

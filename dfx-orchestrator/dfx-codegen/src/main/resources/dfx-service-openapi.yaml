@@ -1,0 +1,207 @@
+openapi: "3.0.4"
+info:
+  title: DFX Service API
+  description: This is the DFX Service API
+  version: "0.0.1-SNAPSHOT"
+servers:
+  - url: http://localhost:8080/
+    description: The local testing server
+paths:
+  /list:
+    get:
+      tags:
+        - ListMessages
+      summary: Endpoint to list all messages which are persisted
+      operationId: getMessages
+      responses:
+        '200':
+          description: A list of all stored messages with their audit trails.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StoredMessage'
+  /rates:
+    get:
+      tags:
+        - Rates
+      summary: Endpoint to retrieve all configured FX rates
+      operationId: getRates
+      responses:
+        '200':
+          description: A map of all configured FX rates.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FxRatesResponse'
+
+  /message:
+    post:
+      tags:
+        - PostMessage
+      summary: Endpoint for messages from/to SWIFT
+      operationId: postMessage
+      requestBody:
+        description: "Pacs.008 Message from/to SWIFT"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payload:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+components:
+  schemas:
+    MessageResponse:
+      type: object
+      description: Response for successful Pesonet File Upload
+      properties:
+        success:
+          type: boolean
+          description: Describes whether the request was successful
+        message-reference:
+          type: string
+          description: Reference of sent message, assigned by SWIFT (mocked)
+        sent-timestamp:
+          type: string
+          format: date-time
+          description: Time of sending to SWIFT
+
+    FxRatesResponse:
+      type: object
+      description: A map of source currencies to their target currency rates.
+      additionalProperties:
+        type: object
+        additionalProperties:
+          type: number
+          format: double
+      example:
+        USD:
+          EUR: 0.93
+          USDC: 1.00
+        EUR:
+          USD: 1.08
+          USDC: 1.08
+
+    VerificationStatus:
+      type: string
+      description: Represents the status of an LEI verification.
+      enum:
+        - UNVERIFIED
+        - VERIFIED
+        - FAILED
+
+    StoredMessage:
+      type: object
+      description: Represents a single stored message with its metadata and audit trail.
+      required:
+        - creditorLegalName
+        - creditorBIC
+        - creditorLEI
+        - debitorLegalName
+        - debitorBIC
+        - debitorLEI
+      properties:
+        messageId:
+          type: string
+          description: The unique identifier for the message.
+        debitorLegalName:
+          type: string
+          description: Legal Name of Debitor
+        creditorLegalName:
+          type: string
+          description: Legal Name of Creditor
+        creditorBIC:
+          type: string
+          description: BIC of Creditor
+        debitorBIC:
+          type: string
+          description: BIC of Debitor
+        creditorLEI:
+          type: string
+          description: The LEI of the creditor.
+        debitorLEI:
+          type: string
+          description: The LEI of the debitor.
+        ccy:
+          type: string
+          description: The currency of the transaction.
+          example: "EUR"
+        amt:
+          type: number
+          format: double
+          description: The amount of the transaction.
+        timestamp:
+          type: string
+          format: date-time
+          description: The timestamp when the message was first received/processed.
+        direction:
+          type: string
+          description: The direction of the message flow.
+          enum:
+            - INBOUND
+            - OUTBOUND
+        payload:
+          type: string
+          description: The original Base64 encoded message payload.
+        fxtrPayload:
+          type: string
+          description: Base64 encoded FX Trade Message created from the original message
+        targetCcy:
+          type: string
+          description: The target currency of the transaction.
+          example: "USDT"
+        targetAmt:
+          type: number
+          format: double
+          description: The target amount of the transaction.
+        fxTradeDate:
+          type: string
+          format: date
+        fxRate:
+          type: number
+          format: double
+          description: The FX Rate of this Transaction
+        creditorLEIStatus:
+          $ref: '#/components/schemas/VerificationStatus'
+        debitorLEIStatus:
+          $ref: '#/components/schemas/VerificationStatus'
+        transactionStatus:
+          type: string
+          description: The status of the transaction.
+          enum:
+            - RECEIVED
+            - LEI VERIFICATION IN PROGRESS
+            - FX MESSAGE CREATION IN PROGRESS
+            - COMPLETED
+            - FAILED
+        auditTrail:
+          type: array
+          description: A list of actions performed on this message.
+          items:
+            $ref: '#/components/schemas/AuditTrailEntry'
+
+    AuditTrailEntry:
+      type: object
+      description: An entry in the audit trail for a message.
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: The timestamp of when the action occurred.
+        action:
+          type: string
+          description: A description of the action that was performed.
+        details:
+          type: string
+          description: Optional details about the action (e.g., error messages).

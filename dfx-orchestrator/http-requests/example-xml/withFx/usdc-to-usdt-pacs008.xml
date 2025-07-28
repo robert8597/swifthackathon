@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09">
+    <FIToFICstmrCdtTrf>
+        <GrpHdr>
+            <MsgId>USDC2USDT-20250805-0005</MsgId>
+            <CreDtTm>2025-08-05T09:20:00Z</CreDtTm>
+            <NbOfTxs>1</NbOfTxs>
+            <SttlmInf>
+                <SttlmMtd>CLRG</SttlmMtd>
+            </SttlmInf>
+        </GrpHdr>
+        <CdtTrfTxInf>
+            <PmtId>
+                <InstrId>USDC2USDT-INSTR-0005</InstrId>
+                <EndToEndId>E2E-USDC2USDT-0005</EndToEndId>
+                <TxId>TX-USDC-USDT-003</TxId>
+            </PmtId>
+            <IntrBkSttlmAmt Ccy="XXX">150000.00</IntrBkSttlmAmt>
+            <ChrgBr>SLEV</ChrgBr>
+            <Dbtr>
+                <Nm>European Central Bank</Nm>
+                <Id>
+                    <OrgId>
+                        <LEI>549300DTUYXVMJXZNY75</LEI>
+                    </OrgId>
+                </Id>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <IBAN>DE89100000001234567890</IBAN>
+                </Id>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BICFI>ECBFDEFFXXX</BICFI>
+                    <LEI>549300DTUYXVMJXZNY75</LEI>
+                </FinInstnId>
+            </DbtrAgt>
+            <CdtrAgt>
+                <FinInstnId>
+                    <BICFI>DEUTDEFFXXX</BICFI>
+                    <LEI>7LTWFZYICNSX8D621K86</LEI>
+                </FinInstnId>
+            </CdtrAgt>
+            <Cdtr>
+                <Nm>DEUTSCHE BANK AKTIENGESELLSCHAFT</Nm>
+                <Id>
+                    <OrgId>
+                        <LEI>7LTWFZYICNSX8D621K86</LEI>
+                    </OrgId>
+                </Id>
+            </Cdtr>
+            <CdtrAcct>
+                <Id>
+                    <IBAN>US00000000000003</IBAN>
+                </Id>
+            </CdtrAcct>
+            <RmtInf>
+                <Ustrd>FX:USDC/USDT</Ustrd>
+            </RmtInf>
+        </CdtTrfTxInf>
+    </FIToFICstmrCdtTrf>
+</Document>

@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  ssl:
+    enabled: false
+    client-auth: none
+management:
+  server:
+    port: 8080
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+dfx:
+  storage:
+    path: "${HOME}/dfx-messages/"
+
+proxy:
+  host: userproxy.intranet.db.com
+  port: 8080

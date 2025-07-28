@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.db.swift</groupId>
+        <artifactId>dfx-orchestrator</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>dfx-codegen</artifactId>
+
+    <properties>
+        <api.definition.file>${project.parent.basedir}/dfx-codegen/src/main/resources/dfx-service-openapi.yaml</api.definition.file>
+
+        <api.documentation.copy.from>${basedir}/target/generated-sources/swagger/docs</api.documentation.copy.from>
+        <api.documentation.copy.to>${basedir}/../src/site/markdown/api</api.documentation.copy.to>
+        <apiPackage>com.db.swift.dfx.openapi.api</apiPackage>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <modelPackage>com.db.swift.dfx.openapi.model</modelPackage>
+
+        <sourceFolder>src/main/java</sourceFolder>
+        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>${parent.jackson-databind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.threeten-jaxb</groupId>
+            <artifactId>threeten-jaxb-core</artifactId>
+            <version>${parent.threeten-jaxb-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta.validation-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jakarta.xml-bind-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${parent.hibernate-validator.version}</version>
+        </dependency>
+
+        <!-- Validation !-->
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Clean Code !-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${parent.lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>${parent.jaxb2-maven-plugin.version}</version>
+                <configuration>
+                    <xjbSources>
+                        <xjbSource>src/main/resources/xjb</xjbSource>
+                    </xjbSources>
+                    <locale>en</locale>
+                    <clearOutputDir>false</clearOutputDir>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>pacs008</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <packageName>com.db.swift.dfx.jaxb.model.pacs008</packageName>
+                            <sources>
+                                <source>src/main/resources/xsd/pacs008</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>fxtr014</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <packageName>com.db.swift.dfx.jaxb.model.fxtr014</packageName>
+                            <sources>
+                                <source>src/main/resources/xsd/fxtr014</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${parent.openapi-generator-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-openapi-server</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <inputSpec>${api.definition.file}</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <modelPackage>${modelPackage}</modelPackage>
+                            <apiPackage>${apiPackage}</apiPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <library>spring-boot</library>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useTags>true</useTags>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useJakartaEe>true</useJakartaEe>
+                                <dateLibrary>java8</dateLibrary>
+                                <performBeanValidation>true</performBeanValidation>
+                                <generateBuilders>true</generateBuilders>
+                                <documentationProvider>none</documentationProvider>
+                            </configOptions>
+                            <typeMappings>
+                                <typeMapping>Double=java.math.BigDecimal</typeMapping>
+                            </typeMappings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
