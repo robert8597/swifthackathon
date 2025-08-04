@@ -5,17 +5,35 @@ import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
 import "../css/PaymentStatusTab.css";
 
 const STORAGE_KEY = "paymentStatusTab.visibleCols";
-const LEADING_COLS = ["transactionStatus", "messageId", "debitorLegalName", "creditorLegalName"];
+// const LEADING_COLS = ["transactionStatus", "messageId", "debitorLegalName", "creditorLegalName"];
+const LEADING_COLS = [];
 const FIXED_COLS = [];
 const DEFAULT_COLS = [
     ...LEADING_COLS,
     ...FIXED_COLS,
-    "ccy", "amt", "fxRate", "targetAmt", "targetCcy",
-    "fxTradeDate",
+    "transactionStatus",
+    "messageId",
     "timestamp",
-    "direction",
+    "debitorAgentLegalName",
+    "debitorLEIStatus",
+    "creditorAgentLegalName",
     "creditorLEIStatus",
-    "debitorLEIStatus"
+    // "ccy",
+    // "amt",
+    // "fxRate",
+    // "targetAmt",
+    // "targetCcy",
+    "conversion",
+    "fxTradeDate",
+    "debitorNetwork",
+    "creditorNetwork",
+    // "debitorWallet",
+    // "creditorWallet",
+    // "blckchnDetails.network",
+    // "blckchnDetails.txId",
+    // "blckchnDetails.token",
+    "blckchnTransactionValidationStatus",
+    "direction"
 ];
 
 function formatConversion(row) {
@@ -92,6 +110,14 @@ function formatXml(xml) {
     }
 }
 
+function extractXmlType(xmlStr) {
+    const match = xmlStr.match(/<Document[^>]*xmlns="([^"]+)"/);
+    if (!match) return "pacs.008.001.09";
+    const ns = match[1];
+    const lastPart = ns.split(":").pop();
+    return lastPart;
+}
+
 function getStatusColor(status) {
     return status === "VERIFIED" ? "#43a047" : status === "FAILED" ? "#e53935" : undefined;
 }
@@ -111,6 +137,11 @@ export default function PaymentStatusTab() {
     // Settings state
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [fetchInterval, setFetchInterval] = useState(5);
+
+    // Default XML type based on selected row
+    const xmlType = selectedRow
+        ? extractXmlType(formatXml(decodeBase64(selectedRow.payload)))
+        : "pacs";
 
     // Fetch data with interval
     useEffect(() => {
@@ -176,13 +207,14 @@ export default function PaymentStatusTab() {
     };
 
     const getColLabel = col => {
+        if (col === "conversion") return "FX Conversion & CCY";
         switch (col) {
             case "messageId":
-                return "Message ID";
-            case "debitorLegalName":
-                return "Debitor Name";
-            case "creditorLegalName":
-                return "Creditor Name";
+                return "UETR";
+            case "debitorAgentLegalName":
+                return "Debitor FI Name";
+            case "creditorAgentLegalName":
+                return "Creditor FI Name";
             case "debitorBIC":
                 return "Debitor BIC";
             case "creditorBIC":
@@ -204,15 +236,31 @@ export default function PaymentStatusTab() {
             case "fxTradeDate":
                 return "FX Conversion Date";
             case "timestamp":
-                return "Timestamp";
+                return "Created";
             case "direction":
                 return "Direction";
             case "transactionStatus":
                 return "Transaction Status";
             case "creditorLEIStatus":
-                return "Creditor LEI Status";
+                return "Creditor FI LEI Status";
             case "debitorLEIStatus":
-                return "Debitor LEI Status";
+                return "Debitor FI LEI Status";
+            case "debitorNetwork":
+                return "Debitor Network";
+            case "creditorNetwork":
+                return "Creditor Network";
+            case "debitorWallet":
+                return "Debitor Wallet";
+            case "creditorWallet":
+                return "Creditor Wallet";
+            case "blckchnDetails.network":
+                return "Blockchain Network";
+            case "blckchnDetails.txId":
+                return "Blockchain TxId";
+            case "blckchnDetails.token":
+                return "Blockchain Token";
+            case "blckchnTransactionValidationStatus":
+                return "Blockchain Validation Status";
             default:
                 return col;
         }
@@ -220,7 +268,8 @@ export default function PaymentStatusTab() {
 
     return (
         <div className="pro-tab-root">
-            <header className="pro-tab-header" style={{display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+            <header className="pro-tab-header"
+                    style={{display: "flex", alignItems: "center", justifyContent: "space-between"}}>
                 <h2>
                     Digital Payment Status{" "}
                     <span className="pro-tab-count">({sortedData.length})</span>
@@ -230,7 +279,7 @@ export default function PaymentStatusTab() {
                     style={{background: "none", border: "none", cursor: "pointer", fontSize: 22, color: "#1976d2"}}
                     title="Settings"
                 >
-                    <FiSettings />
+                    <FiSettings/>
                 </button>
             </header>
             <section className="pro-tab-cols">
@@ -268,11 +317,6 @@ export default function PaymentStatusTab() {
                                         {getColLabel(col)}
                                     </label>
                                 ))}
-                                <label className="pro-tab-col pro-tab-col--fixed"
-                                       style={{background: "#e3f2fd", fontWeight: 600}} title="Conversion">
-                                    <span className="pro-tab-checkbox"><FiCheckSquare/></span>
-                                    Conversion
-                                </label>
                                 {draggableCols.map((col, idx) => (
                                     <Draggable key={col} draggableId={col} index={idx}>
                                         {provided => (
@@ -313,60 +357,69 @@ export default function PaymentStatusTab() {
                 <table className="pro-tab-table">
                     <thead>
                     <tr>
-                        {LEADING_COLS.map(col => (<th key={col}>{getColLabel(col)}</th>))}
-                        {FIXED_COLS.map(col => (<th key={col}>{getColLabel(col)}</th>))}
-                        <th>Conversion</th>
-                        {draggableCols.map(col => (
-                            <th key={col} onClick={() => handleSort(col)}
-                                className={sortCol === col ? "pro-tab-th--active" : ""} title="Sort">
+                        {visibleCols.map(col => (
+                            <th
+                                key={col}
+                                onClick={() => handleSort(col)}
+                                className={sortCol === col ? "pro-tab-th--active" : ""}
+                                title="Sort"
+                            >
                                 {getColLabel(col)}
                                 {sortCol === col ? (sortDir === "asc" ? " ▲" : " ▼") : ""}
                             </th>
                         ))}
                     </tr>
                     </thead>
+
                     <tbody>
                     {sortedData.map((row, idx) => (
                         <tr key={idx} onClick={() => setSelectedRow(row)} style={{cursor: "pointer"}}>
-                            {LEADING_COLS.map(col => (
-                                <td
-                                    key={col}
-                                    style={
-                                        col === "transactionStatus"
-                                            ? {
-                                                background: row[col] === "COMPLETED" ? "#e8f5e9" : "#ffebee",
-                                                color: row[col] === "COMPLETED" ? "#388e3c" : "#c62828",
-                                                fontWeight: 600
-                                            }
-                                            : undefined
-                                    }
-                                >
-                                    {row[col] ?? ""}
-                                </td>
-                            ))}
-                            {FIXED_COLS.map(col => (<td key={col}>{row[col] ?? ""}</td>))}
-                            <td style={{whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
-                                {formatConversion(row)}
-                            </td>
-                            {draggableCols.map(col => (
-                                <td
-                                    key={col}
-                                    style={
-                                        col === "creditorLEIStatus" || col === "debitorLEIStatus"
-                                            ? {
-                                                color: getStatusColor(row[col]),
-                                                fontWeight: 600
-                                            }
-                                            : undefined
-                                    }
-                                >
-                                    {col === "fxTradeDate"
-                                        ? formatFxTradeDate(row[col])
-                                        : col === "timestamp"
-                                            ? formatTimestamp(row[col])
-                                            : row[col] ?? ""}
-                                </td>
-                            ))}
+                            {visibleCols.map(col => {
+                                let cellValue =
+                                    col === "creditorNetwork"
+                                        ? (row[col] ? row[col] : "NA")
+                                        : col === "blckchnTransactionValidationStatus"
+                                            ? (row[col] ? row[col] : "NA")
+                                            : col === "conversion"
+                                                ? formatConversion(row)
+                                                : col === "fxTradeDate"
+                                                    ? formatFxTradeDate(row[col])
+                                                    : col === "timestamp"
+                                                        ? formatTimestamp(row[col])
+                                                        : col.startsWith("blckchnDetails.")
+                                                            ? row.blckchnDetails?.[col.split(".")[1]] ?? ""
+                                                            : row[col] ?? "";
+
+                                return (
+                                    <td
+                                        key={col}
+                                        style={
+                                            col === "conversion"
+                                                ? {whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}
+                                                : col === "transactionStatus"
+                                                    ? {
+                                                        background: row[col] === "COMPLETED" ? "#e8f5e9" : "#ffebee",
+                                                        color: row[col] === "COMPLETED" ? "#388e3c" : "#c62828",
+                                                        fontWeight: 600
+                                                    }
+                                                    : col === "creditorLEIStatus" || col === "debitorLEIStatus"
+                                                        ? {color: getStatusColor(row[col]), fontWeight: 600}
+                                                        : col === "blckchnTransactionValidationStatus"
+                                                            ? {
+                                                                color: cellValue === "VALIDATED" || cellValue === "SKIPPED"
+                                                                    ? "#43a047"
+                                                                    : cellValue === "NA"
+                                                                        ? "#222"
+                                                                        : "#e53935",
+                                                                fontWeight: cellValue === "NA" ? 400 : 600
+                                                            }
+                                                            : undefined
+                                        }
+                                    >
+                                        {cellValue}
+                                    </td>
+                                );
+                            })}
                         </tr>
                     ))}
                     </tbody>
@@ -474,7 +527,7 @@ export default function PaymentStatusTab() {
                                             cursor: "pointer"
                                         }}
                                     >
-                                        pacs.008.001.09
+                                        {xmlType}
                                     </button>
                                     <button
                                         onClick={() => setActivePayloadTab("fxtr")}
