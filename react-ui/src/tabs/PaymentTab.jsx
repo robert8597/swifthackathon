@@ -1,66 +1,17 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {FiColumns, FiChevronDown, FiChevronUp} from "react-icons/fi";
+import {
+    baseFields,
+    paymentDetailsFieldsIncomingUsdcToEur,
+    paymentDetailsFieldsOutboundUsdcToEur,
+    paymentDetailsFieldsIncomingUsdcToDeur,
+    paymentDetailsFieldsOutboundUsdcToDeur
+} from "../resources/paymentDetailsFields";
 import "../css/PaymentTab.css";
 
-const baseFields = {
-    sender: "",
-    receiver: "",
-    originalCurrency: "",
-    originalAmount: "",
-    convertedCurrency: ""
-};
-
-const paymentDetailsFields = {
-    MsgId: "USDT2EUR-20250804-0004",
-    CreDtTm: "2025-08-04T15:45:00Z",
-    NbOfTxs: "1",
-    SttlmMtd: "CLRG",
-    InstrId: "USDT2EUR-INSTR-0004",
-    EndToEndId: "E2E-USDT2EUR-0004",
-    TxId: "TX-USDT-EUR-002",
-    IntrBkSttlmAmt: "9500.00",
-    IntrBkSttlmCcy: "XXX",
-    ChrgBr: "SHAR",
-    DbtrNm: "European Central Bank",
-    DbtrLEI: "549300DTUYXVMJXZNY75",
-    DbtrAcctIBAN: "DE89100000001234567890",
-    DbtrAgtBIC: "ECBFDEFFXXX",
-    DbtrAgtLEI: "549300DTUYXVMJXZNY75",
-    CdtrAgtBIC: "DEUTDEFFXXX",
-    CdtrAgtLEI: "7LTWFZYICNSX8D621K86",
-    CdtrNm: "DEUTSCHE BANK AKTIENGESELLSCHAFT",
-    CdtrLEI: "7LTWFZYICNSX8D621K86",
-    CdtrAcctIBAN: "US00000000000003",
-    RmtInfUstrd: "FX:USDT/EUR"
-};
-
-const paymentDetailsFieldsOutbound = {
-    MsgId: "USDT2EUR-20250804-0004",
-    CreDtTm: "2025-08-04T15:45:00Z",
-    NbOfTxs: "1",
-    SttlmMtd: "CLRG",
-    InstrId: "USDT2EUR-INSTR-0004",
-    EndToEndId: "E2E-USDT2EUR-0004",
-    TxId: "TX-USDT-EUR-002",
-    IntrBkSttlmAmt: "5500.00",
-    IntrBkSttlmCcy: "XXX",
-    ChrgBr: "SHAR",
-    DbtrNm: "DEUTSCHE BANK AKTIENGESELLSCHAFT",
-    DbtrLEI: "7LTWFZYICNSX8D621K86",
-    DbtrAcctIBAN: "US00000000000003",
-    DbtrAgtBIC: "DEUTDEFFXXX",
-    DbtrAgtLEI: "7LTWFZYICNSX8D621K86",
-    CdtrAgtBIC: "ECBFDEFFXXX",
-    CdtrAgtLEI: "549300DTUYXVMJXZNY75",
-    CdtrNm: "European Central Bank",
-    CdtrLEI: "549300DTUYXVMJXZNY75",
-    CdtrAcctIBAN: "DE89100000001234567890",
-    RmtInfUstrd: "FX:USDT/EUR"
-};
-
-function buildPaymentDetailsXML(fields) {
+function buildPaymentDetailsXML(fields, isOutbound) {
     return `<?xml version="1.0" encoding="UTF-8"?>
-<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09">
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.14">
     <FIToFICstmrCdtTrf>
         <GrpHdr>
             <MsgId>${fields.MsgId}</MsgId>
@@ -75,21 +26,23 @@ function buildPaymentDetailsXML(fields) {
                 <InstrId>${fields.InstrId}</InstrId>
                 <EndToEndId>${fields.EndToEndId}</EndToEndId>
                 <TxId>${fields.TxId}</TxId>
+                <UETR>${fields.UETR}</UETR>
+                <TxHash>${fields.TxHash}</TxHash>
             </PmtId>
             <IntrBkSttlmAmt Ccy="${fields.IntrBkSttlmCcy}">${fields.IntrBkSttlmAmt}</IntrBkSttlmAmt>
+            ${isOutbound ? "" : `<InstdAmt Ccy="${fields.InstdAmtCcy}">${fields.InstdAmt}</InstdAmt>`}
             <ChrgBr>${fields.ChrgBr}</ChrgBr>
             <Dbtr>
                 <Nm>${fields.DbtrNm}</Nm>
-                <Id>
-                    <OrgId>
-                        <LEI>${fields.DbtrLEI}</LEI>
-                    </OrgId>
-                </Id>
             </Dbtr>
             <DbtrAcct>
-                <Id>
-                    <IBAN>${fields.DbtrAcctIBAN}</IBAN>
-                </Id>
+                <WalletId>
+                    <DbtrWalletAddr>${fields.DbtrWalletAddr}</DbtrWalletAddr>
+                </WalletId>
+                <WalletNtwrk>
+                    <DbtrWalletNtwrk>${fields.DbtrWalletNtwrk}</DbtrWalletNtwrk>
+                </WalletNtwrk>
+                <TokenId>${fields.DbtrTokenId}</TokenId>
             </DbtrAcct>
             <DbtrAgt>
                 <FinInstnId>
@@ -105,16 +58,22 @@ function buildPaymentDetailsXML(fields) {
             </CdtrAgt>
             <Cdtr>
                 <Nm>${fields.CdtrNm}</Nm>
-                <Id>
-                    <OrgId>
-                        <LEI>${fields.CdtrLEI}</LEI>
-                    </OrgId>
-                </Id>
             </Cdtr>
             <CdtrAcct>
-                <Id>
-                    <IBAN>${fields.CdtrAcctIBAN}</IBAN>
-                </Id>
+    ${
+        fields.convertedCurrency === "EUR"
+            ? `<Id>
+            <IBAN>${fields.CdtrIban}</IBAN>
+        </Id>
+        <Ccy>EUR</Ccy>`
+            : `<WalletId>
+            <CdtrWalletAddr>${fields.CdtrWalletAddr}</CdtrWalletAddr>
+        </WalletId>
+        <WalletNtwrk>
+            <CdtrWalletNtwrk>${fields.CdtrWalletNtwrk}</CdtrWalletNtwrk>
+        </WalletNtwrk>
+        <TokenId>${fields.CdtrTokenId}</TokenId>`
+    }
             </CdtrAcct>
             <RmtInf>
                 <Ustrd>${fields.RmtInfUstrd}</Ustrd>
@@ -124,24 +83,39 @@ function buildPaymentDetailsXML(fields) {
 </Document>`;
 }
 
-export default function PaymentTab({onAddRow}) {
+export default function PaymentTab({
+                                       onAddRow = () => {
+                                       }
+                                   }) {
+    const [selectedCurrency, setSelectedCurrency] = useState("DEUR");
     const [isOutbound, setIsOutbound] = useState(false);
     const [fields, setFields] = useState({
         ...baseFields,
-        ...(isOutbound ? paymentDetailsFieldsOutbound : paymentDetailsFields)
+        ...paymentDetailsFieldsIncomingUsdcToDeur
     });
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [response, setResponse] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
 
-    // Change between Inbound and Outbound
-    const handleDirectionChange = outbound => {
-        setIsOutbound(outbound);
+    useEffect(() => {
+        let newFields;
+        let targetCurrency = "";
+        if (selectedCurrency === "EUR") {
+            newFields = paymentDetailsFieldsIncomingUsdcToEur;
+            targetCurrency = "EUR";
+        } else if (selectedCurrency === "DEUR" && !isOutbound) {
+            newFields = paymentDetailsFieldsIncomingUsdcToDeur;
+        } else {
+            newFields = paymentDetailsFieldsOutboundUsdcToDeur;
+        }
         setFields({
             ...baseFields,
-            ...(outbound ? paymentDetailsFieldsOutbound : paymentDetailsFields)
+            ...newFields,
+            convertedCurrency: targetCurrency
         });
-    };
+    }, [selectedCurrency, isOutbound]);
+
+    const handleDirectionChange = outbound => setIsOutbound(outbound);
 
     const handleChange = e => {
         setFields({...fields, [e.target.name]: e.target.value});
@@ -150,13 +124,24 @@ export default function PaymentTab({onAddRow}) {
     const handleSubmit = async e => {
         e.preventDefault();
 
+        let paymentFields;
         if (showAdvanced) {
-            const paymentFields = {};
-            Object.keys(isOutbound ? paymentDetailsFieldsOutbound : paymentDetailsFields).forEach(key => {
-                paymentFields[key] = fields[key];
+            if (selectedCurrency === "DEUR" && !isOutbound) {
+                paymentFields = paymentDetailsFieldsIncomingUsdcToDeur;
+            } else if (selectedCurrency === "DEUR" && isOutbound) {
+                paymentFields = paymentDetailsFieldsOutboundUsdcToDeur;
+            } else if (selectedCurrency === "EUR" && !isOutbound) {
+                paymentFields = paymentDetailsFieldsIncomingUsdcToEur;
+            } else {
+                paymentFields = paymentDetailsFieldsOutboundUsdcToEur;
+            }
+            const xmlFields = {};
+            Object.keys(paymentFields).forEach(key => {
+                xmlFields[key] = fields[key];
             });
 
-            const xml = buildPaymentDetailsXML(paymentFields);
+            const xml = buildPaymentDetailsXML(xmlFields, isOutbound);
+            console.log(xml);
             const base64 = btoa(unescape(encodeURIComponent(xml)));
 
             try {
@@ -179,7 +164,9 @@ export default function PaymentTab({onAddRow}) {
 
         setFields({
             ...baseFields,
-            ...(isOutbound ? paymentDetailsFieldsOutbound : paymentDetailsFields)
+            ...(selectedCurrency === "DEUR"
+                ? (isOutbound ? paymentDetailsFieldsOutboundUsdcToDeur : paymentDetailsFieldsIncomingUsdcToDeur)
+                : (isOutbound ? paymentDetailsFieldsOutboundUsdcToEur : paymentDetailsFieldsIncomingUsdcToEur))
         });
         setShowAdvanced(false);
     };
@@ -201,38 +188,53 @@ export default function PaymentTab({onAddRow}) {
             </section>
             <div style={{height: 32}}></div>
 
-            <div style={{marginBottom: 16, display: "flex", gap: 12}}>
-                <button
-                    type="button"
-                    onClick={() => handleDirectionChange(false)}
-                    style={{
-                        background: !isOutbound ? "#1976d2" : "#f5f5f5",
-                        color: !isOutbound ? "#fff" : "#1976d2",
-                        border: "1px solid #1976d2",
-                        borderRadius: 6,
-                        padding: "8px 18px",
-                        fontWeight: 600,
-                        cursor: "pointer"
-                    }}
-                >
-                    Inbound
-                </button>
-                <button
-                    type="button"
-                    onClick={() => handleDirectionChange(true)}
-                    style={{
-                        background: isOutbound ? "#1976d2" : "#f5f5f5",
-                        color: isOutbound ? "#fff" : "#1976d2",
-                        border: "1px solid #1976d2",
-                        borderRadius: 6,
-                        padding: "8px 18px",
-                        fontWeight: 600,
-                        cursor: "pointer"
-                    }}
-                >
-                    Outbound
-                </button>
+            <div className="button-row">
+                <div className="button-group">
+                    <button
+                        type="button"
+                        className={`custom-btn ${selectedCurrency === "DEUR" ? "active" : ""}`}
+                        onClick={() => setSelectedCurrency("DEUR")}
+                    >
+                        USDC TO DEUR
+                    </button>
+                    <button
+                        type="button"
+                        className={`custom-btn ${selectedCurrency === "EUR" ? "active" : ""}`}
+                        onClick={() => setSelectedCurrency("EUR")}
+                    >
+                        USDC TO EUR
+                    </button>
+                </div>
+                {selectedCurrency !== "EUR" ? (
+                    <div className="button-group">
+                        <button
+                            type="button"
+                            className={`custom-btn ${!isOutbound ? "active" : ""}`}
+                            onClick={() => handleDirectionChange(false)}
+                        >
+                            Inbound
+                        </button>
+                        <button
+                            type="button"
+                            className={`custom-btn ${isOutbound ? "active" : ""}`}
+                            onClick={() => handleDirectionChange(true)}
+                        >
+                            Outbound
+                        </button>
+                    </div>
+                ) : (
+                    <div className="button-group">
+                        <button
+                            type="button"
+                            className={`custom-btn active`}
+                            disabled
+                        >
+                            Inbound
+                        </button>
+                    </div>
+                )}
             </div>
+
             <form
                 className="payment-tab-form"
                 onSubmit={handleSubmit}
@@ -265,90 +267,158 @@ export default function PaymentTab({onAddRow}) {
 
                 <button
                     type="button"
-                    className="payment-tab-form-advance"
+                    className="payment-tab-form-advance custom-btn"
                     onClick={() => setShowAdvanced(v => !v)}
-                    style={{
-                        margin: "0 0 24px 0",
-                        background: "#f5f5f5",
-                        border: "none",
-                        borderRadius: 6,
-                        padding: "10px 18px",
-                        fontWeight: 600,
-                        color: "#1976d2",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center"
-                    }}
                 >
                     {showAdvanced ? <FiChevronUp style={{marginRight: 8}}/> : <FiChevronDown style={{marginRight: 8}}/>}
                     {showAdvanced ? "Hide advanced fields" : "Show advanced fields"}
                 </button>
 
                 {showAdvanced && (
-                    <fieldset style={{border: "1px solid #e0e0e0", borderRadius: 8, marginBottom: 28, padding: 20}}>
-                        <legend style={{fontWeight: 600, color: "#1976d2", padding: "0 10px"}}>Payment Details (ISO
-                            20022)
-                        </legend>
-                        <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18}}>
-                            <Input label="Message ID" name="MsgId" value={fields.MsgId} onChange={handleChange}/>
-                            <Input label="Creation Date Time" name="CreDtTm" value={fields.CreDtTm}
-                                   onChange={handleChange}/>
-                            <Input label="Number of Transactions" name="NbOfTxs" value={fields.NbOfTxs}
-                                   onChange={handleChange}/>
-                            <Input label="Settlement Method" name="SttlmMtd" value={fields.SttlmMtd}
-                                   onChange={handleChange}/>
-                            <Input label="Instruction ID" name="InstrId" value={fields.InstrId}
-                                   onChange={handleChange}/>
-                            <Input label="End-to-End ID" name="EndToEndId" value={fields.EndToEndId}
-                                   onChange={handleChange}/>
-                            <Input label="Transaction ID" name="TxId" value={fields.TxId} onChange={handleChange}/>
-                            <Input label="Interbank Settlement Amount" name="IntrBkSttlmAmt"
-                                   value={fields.IntrBkSttlmAmt} onChange={handleChange}/>
-                            <Input label="Interbank Settlement Currency" name="IntrBkSttlmCcy"
-                                   value={fields.IntrBkSttlmCcy} onChange={handleChange}/>
-                            <Input label="Charge Bearer" name="ChrgBr" value={fields.ChrgBr} onChange={handleChange}/>
-                            <Input label="Debtor Name" name="DbtrNm" value={fields.DbtrNm} onChange={handleChange}/>
-                            <Input label="Debtor LEI" name="DbtrLEI" value={fields.DbtrLEI} onChange={handleChange}/>
-                            <Input label="Debtor Account IBAN" name="DbtrAcctIBAN" value={fields.DbtrAcctIBAN}
-                                   onChange={handleChange}/>
-                            <Input label="Debtor Agent BIC" name="DbtrAgtBIC" value={fields.DbtrAgtBIC}
-                                   onChange={handleChange}/>
-                            <Input label="Debtor Agent LEI" name="DbtrAgtLEI" value={fields.DbtrAgtLEI}
-                                   onChange={handleChange}/>
-                            <Input label="Creditor Agent BIC" name="CdtrAgtBIC" value={fields.CdtrAgtBIC}
-                                   onChange={handleChange}/>
-                            <Input label="Creditor Agent LEI" name="CdtrAgtLEI" value={fields.CdtrAgtLEI}
-                                   onChange={handleChange}/>
-                            <Input label="Creditor Name" name="CdtrNm" value={fields.CdtrNm} onChange={handleChange}/>
-                            <Input label="Creditor LEI" name="CdtrLEI" value={fields.CdtrLEI} onChange={handleChange}/>
-                            <Input label="Creditor Account IBAN" name="CdtrAcctIBAN" value={fields.CdtrAcctIBAN}
-                                   onChange={handleChange}/>
-                            <Input label="Remittance Information" name="RmtInfUstrd" value={fields.RmtInfUstrd}
-                                   onChange={handleChange}/>
-                        </div>
-                    </fieldset>
+                    <>
+                        <fieldset style={{border: "1px solid #e0e0e0", borderRadius: 8, marginBottom: 28, padding: 20}}>
+                            <legend style={{fontWeight: 600, color: "#1976d2", padding: "0 10px"}}>Payment Details (ISO
+                                20022)
+                            </legend>
+                            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18}}>
+                                <Input label="Message ID" name="MsgId" value={fields.MsgId} onChange={handleChange}/>
+                                <Input label="Creation Date/Time" name="CreDtTm" value={fields.CreDtTm}
+                                       onChange={handleChange}/>
+                                <Input label="Number of Transactions" name="NbOfTxs" value={fields.NbOfTxs}
+                                       onChange={handleChange}/>
+                                <Input label="Settlement Method" name="SttlmMtd" value={fields.SttlmMtd}
+                                       onChange={handleChange}/>
+                                <Input label="Instruction ID" name="InstrId" value={fields.InstrId}
+                                       onChange={handleChange}/>
+                                <Input label="EndToEnd ID" name="EndToEndId" value={fields.EndToEndId}
+                                       onChange={handleChange}/>
+                                <Input label="Transaction ID" name="TxId" value={fields.TxId} onChange={handleChange}/>
+                                <Input label="UETR" name="UETR" value={fields.UETR} onChange={handleChange}/>
+                                <Input label="Transaction Hash" name="TxHash" value={fields.TxHash}
+                                       onChange={handleChange}/>
+                                <Input label="Interbank Settlement Amount" name="IntrBkSttlmAmt"
+                                       value={fields.IntrBkSttlmAmt} onChange={handleChange}/>
+                                <Input label="Interbank Settlement Currency" name="IntrBkSttlmCcy"
+                                       value={fields.IntrBkSttlmCcy} onChange={handleChange}/>
+                                {!isOutbound && (
+                                    <Input label="Instructed Amount" name="InstdAmt" value={fields.InstdAmt} onChange={handleChange}/>
+                                )}
+                                {!isOutbound && (
+                                    <Input label="Instructed Amount Currency" name="InstdAmtCcy" value={fields.InstdAmtCcy} onChange={handleChange}/>
+                                )}
+                                <Input label="Charge Bearer" name="ChrgBr" value={fields.ChrgBr}
+                                       onChange={handleChange}/>
+                                <Input label="Remittance Information" name="RmtInfUstrd" value={fields.RmtInfUstrd}
+                                       onChange={handleChange}/>
+                            </div>
+                        </fieldset>
+
+                        <fieldset style={{border: "1px solid #e0e0e0", borderRadius: 8, marginBottom: 28, padding: 20}}>
+                            <legend style={{fontWeight: 600, color: "#1976d2", padding: "0 10px"}}>Debitor</legend>
+                            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18}}>
+                                <Input label="Debtor Name" name="DbtrNm" value={fields.DbtrNm} onChange={handleChange}/>
+                                <Input label="Debtor Wallet Address" name="DbtrWalletAddr" value={fields.DbtrWalletAddr}
+                                       onChange={handleChange}/>
+                                <Input label="Debtor Wallet Network" name="DbtrWalletNtwrk"
+                                       value={fields.DbtrWalletNtwrk} onChange={handleChange}/>
+                                <Input label="Debtor Token ID" name="DbtrTokenId" value={fields.DbtrTokenId}
+                                       onChange={handleChange}/>
+                                <Input label="Debtor Agent BIC" name="DbtrAgtBIC" value={fields.DbtrAgtBIC}
+                                       onChange={handleChange}/>
+                                <Input label="Debtor Agent LEI" name="DbtrAgtLEI" value={fields.DbtrAgtLEI}
+                                       onChange={handleChange}/>
+                            </div>
+                        </fieldset>
+
+                        <fieldset style={{border: "1px solid #e0e0e0", borderRadius: 8, marginBottom: 28, padding: 20}}>
+                            <legend style={{fontWeight: 600, color: "#1976d2", padding: "0 10px"}}>Creditor</legend>
+                            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18}}>
+                                <Input label="Creditor Name" name="CdtrNm" value={fields.CdtrNm}
+                                       onChange={handleChange}/>
+                                {fields.convertedCurrency === "EUR" ? (
+                                    <Input label="Creditor IBAN" name="CdtrIban" value={fields.CdtrIban}
+                                           onChange={handleChange}/>
+                                ) : (
+                                    <>
+                                        <Input label="Creditor Wallet Address" name="CdtrWalletAddr"
+                                               value={fields.CdtrWalletAddr} onChange={handleChange}/>
+                                        <Input label="Creditor Wallet Network" name="CdtrWalletNtwrk"
+                                               value={fields.CdtrWalletNtwrk} onChange={handleChange}/>
+                                        <Input label="Creditor Token ID" name="CdtrTokenId" value={fields.CdtrTokenId}
+                                               onChange={handleChange}/>
+                                    </>
+                                )}
+                                <Input label="Creditor Agent BIC" name="CdtrAgtBIC" value={fields.CdtrAgtBIC}
+                                       onChange={handleChange}/>
+                                <Input label="Creditor Agent LEI" name="CdtrAgtLEI" value={fields.CdtrAgtLEI}
+                                       onChange={handleChange}/>
+                            </div>
+                        </fieldset>
+                    </>
                 )}
 
                 <button
                     type="submit"
-                    className="payment-tab-form-button"
-                    style={{
-                        marginTop: 8,
-                        background: "#1976d2",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: 6,
-                        padding: "12px 28px",
-                        fontWeight: 700,
-                        fontSize: 16,
-                        cursor: "pointer",
-                        boxShadow: "0 2px 8px #e0e0e0"
-                    }}
+                    className="payment-tab-form-button custom-btn"
                 >
                     Execute Payment
                 </button>
             </form>
             <ResponseModal open={modalOpen && !!response} onClose={() => setModalOpen(false)} response={response}/>
+            <style>{`
+                .button-row {
+                    display: flex;
+                    justify-content: center;
+                    gap: 32px;
+                    margin-bottom: 32px;
+                }
+                .button-group {
+                    display: flex;
+                    gap: 16px;
+                    background: #f0f7ff;
+                    border-radius: 10px;
+                    padding: 12px 24px;
+                    box-shadow: 0 2px 8px #e0e0e0;
+                }
+                .custom-btn {
+                    background: #f5f5f5;
+                    color: #1976d2;
+                    border: 2px solid #1976d2;
+                    border-radius: 8px;
+                    padding: 12px 32px;
+                    font-weight: 600;
+                    font-size: 17px;
+                    cursor: pointer;
+                    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+                    box-shadow: 0 1px 4px #e0e0e0;
+                }
+                .custom-btn.active,
+                .custom-btn:focus {
+                    background: #1976d2;
+                    color: #fff;
+                    outline: none;
+                    box-shadow: 0 2px 8px #1976d2;
+                }
+                .custom-btn:hover {
+                    background: #1565c0;
+                    color: #fff;
+                }
+                .payment-tab-form-advance.custom-btn {
+                    margin-bottom: 24px;
+                    background: #e3eafc;
+                    color: #1976d2;
+                    border: 2px solid #1976d2;
+                    font-size: 16px;
+                }
+                .payment-tab-form-button.custom-btn {
+                    margin-top: 16px;
+                    background: #1976d2;
+                    color: #fff;
+                    border: none;
+                    font-size: 18px;
+                    box-shadow: 0 2px 8px #e0e0e0;
+                }
+            `}</style>
         </div>
     );
 }
@@ -370,7 +440,6 @@ function Input({label, name, value, onChange, ...rest}) {
     );
 }
 
-// Modal-Component für die Response bleibt unverändert
 function ResponseModal({open, onClose, response}) {
     const [showJson, setShowJson] = useState(false);
 
@@ -410,8 +479,8 @@ function ResponseModal({open, onClose, response}) {
                             color: response.success ? "#2e7d32" : "#d32f2f",
                             fontWeight: 600
                         }}>
-        {response.success ? "Success" : "Error"}
-    </span>
+                            {response.success ? "Success" : "Error"}
+                        </span>
                     </div>
                     <div style={{marginBottom: 8}}>
                         <strong>Message Reference:</strong> {response["message-reference"]}
@@ -423,29 +492,15 @@ function ResponseModal({open, onClose, response}) {
                 <div style={{display: "flex", gap: 12}}>
                     <button
                         onClick={() => setShowJson(true)}
-                        style={{
-                            background: "#e3eafc",
-                            color: "#1976d2",
-                            border: "none",
-                            borderRadius: 6,
-                            padding: "10px 24px",
-                            fontWeight: 600,
-                            cursor: "pointer"
-                        }}
+                        className="custom-btn"
+                        style={{background: "#e3eafc", color: "#1976d2"}}
                     >
                         Show JSON
                     </button>
                     <button
                         onClick={onClose}
-                        style={{
-                            background: "#1976d2",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: 6,
-                            padding: "10px 24px",
-                            fontWeight: 600,
-                            cursor: "pointer"
-                        }}
+                        className="custom-btn"
+                        style={{background: "#1976d2", color: "#fff"}}
                     >
                         Close
                     </button>
@@ -464,16 +519,8 @@ function ResponseModal({open, onClose, response}) {
                         <pre>{JSON.stringify(response, null, 2)}</pre>
                         <button
                             onClick={() => setShowJson(false)}
-                            style={{
-                                marginTop: 12,
-                                background: "#fff",
-                                color: "#1976d2",
-                                border: "none",
-                                borderRadius: 6,
-                                padding: "8px 18px",
-                                fontWeight: 600,
-                                cursor: "pointer"
-                            }}
+                            className="custom-btn"
+                            style={{marginTop: 12, background: "#fff", color: "#1976d2"}}
                         >
                             Hide JSON
                         </button>
