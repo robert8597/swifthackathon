@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.14">
+    <FIToFICstmrCdtTrf>
+        <GrpHdr>
+            <MsgId>D2D-V14-20250809-001</MsgId>
+            <CreDtTm>2025-08-09T12:00:00Z</CreDtTm>
+            <NbOfTxs>1</NbOfTxs>
+            <SttlmInf>
+                <SttlmMtd>CLRG</SttlmMtd>
+            </SttlmInf>
+        </GrpHdr>
+        <CdtTrfTxInf>
+            <PmtId>
+                <InstrId>D2D-V14-INSTR-001</InstrId>
+                <EndToEndId>E2E-D2D-V14-001</EndToEndId>
+                <TxId>TX-D2D-V14-001</TxId>
+                <UETR>f4b1b3b4-1b1b-4b1b-8b1b-1b1b1b1b1b1b</UETR>
+                <TxHash>0x4444444444444444444444444444444444444444444444444444444444444444</TxHash>
+            </PmtId>
+            <IntrBkSttlmAmt Ccy="EUR">5000.00</IntrBkSttlmAmt>
+            <ChrgBr>SHAR</ChrgBr>
+            <!-- Debtor Party -->
+            <Dbtr>
+                <Nm>Digital Asset Sender Inc.</Nm>
+            </Dbtr>
+            <!-- Debtor Account (Wallet) -->
+            <DbtrAcct>
+                <WalletId>
+                    <DbtrWalletAddr>0xDebtorWalletAddressForV14Payment123456789</DbtrWalletAddr>
+                </WalletId>
+                <WalletNtwrk>
+                    <DbtrWalletNtwrk>Ethereum</DbtrWalletNtwrk>
+                </WalletNtwrk>
+                <TokenId>USDC</TokenId>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BICFI>DEUTDEFFXXX</BICFI>
+                    <LEI>7LTWFZYICNSX8D621K86</LEI>
+                </FinInstnId>
+            </DbtrAgt>
+            <!-- Creditor Agent -->
+            <CdtrAgt>
+                <FinInstnId>
+                    <BICFI>BKTRUS33XXX</BICFI>
+                    <LEI>8EWQ2UQKS07AKK8ANH81</LEI>
+                </FinInstnId>
+            </CdtrAgt>
+            <!-- Creditor Party -->
+            <Cdtr>
+                <Nm>Digital Asset Receiver GmbH</Nm>
+            </Cdtr>
+            <!-- Creditor Account (Wallet) -->
+            <CdtrAcct>
+                <Id>
+                    <IBAN>DE02100100100006820101</IBAN>
+                </Id>
+                <Ccy>EUR</Ccy>
+            </CdtrAcct>
+            <RmtInf>
+                <Ustrd>Digital to Digital Payment from USDC to EUR</Ustrd>
+            </RmtInf>
+        </CdtTrfTxInf>
+    </FIToFICstmrCdtTrf>
+</Document>

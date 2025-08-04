@@ -7,6 +7,7 @@ import com.db.swift.dfx.service.utils.JaxbMarshallingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,6 +40,29 @@ public class FXService {
         }
 
         StoredMessage storedMessage = messageOptional.get();
+        String randomHash = new RandomStringGenerator.Builder().withinRange('a', 'z').withinRange('0', '9').build()
+                .generate(64);
+        String fxTransactionHash = "0x" + randomHash;
+        if (storedMessage.getDirection().equals(StoredMessage.DirectionEnum.INBOUND)) {
+            log.info("Inbound Message, no FX Conversion necessary for messageId {}. Skipping FX Conversion.", messageId);
+            storedMessage.setTransactionStatus(StoredMessage.TransactionStatusEnum.COMPLETED);
+            storedMessage.addAuditTrailItem(createAuditEntry("Inbound message, FX conversion not necessary", "FX conversion was already done by counterparty, skipping FX conversion step..."));
+            if (DIGITAL_CURRENCIES.contains(storedMessage.getTargetCcy())) {
+
+                storedMessage.addAuditTrailItem(createAuditEntry("Blockchain Transaction Creation for Creditor successful",
+                        "Blockchain Transaction " + fxTransactionHash + " created on network "
+                                + storedMessage.getCreditorNetwork() + " for token " + storedMessage.getTargetCcy()));
+            } else {
+                storedMessage.addAuditTrailItem(createAuditEntry("No Blockchain Transaction necessary",
+                        "Creditor Account is in Fiat Currency. No Blockchain transaction needed"));
+            }
+
+            storedMessage.addAuditTrailItem(createAuditEntry("Transaction completed",
+                    "Successfully completed all flows linked to this transaction."));
+            messageStorageService.updateMessage(storedMessage);
+            return;
+        }
+
         storedMessage.setTransactionStatus(StoredMessage.TransactionStatusEnum.FX_MESSAGE_CREATION_IN_PROGRESS);
         storedMessage.addAuditTrailItem(createAuditEntry("FX Conversion Creation Started", "Beginning creation of fxtr.014 message."));
         messageStorageService.updateMessage(storedMessage);
@@ -47,18 +71,12 @@ public class FXService {
             com.db.swift.dfx.jaxb.model.pacs008.Document pacs008 = jaxbMarshallingUtil.unmarshall(
                     new String(base64.decode(storedMessage.getPayload())),
                     com.db.swift.dfx.jaxb.model.pacs008.Document.class,
-                    "/xsd/pacs.008.001.09.xsd"
+                    "/xsd/pacs.008.001.14.xsd"
             );
 
             // 2. Parse currencies from Remittance Information
             String sourceCurrency = storedMessage.getCcy();
             String targetCurrency = storedMessage.getTargetCcy();
-
-            if (pacs008.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy().equals("XXX")) {
-                log.info("Message {} has a digital token as source currency", messageId);
-            } else if (!pacs008.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy().equals(sourceCurrency)) {
-                throw new IllegalStateException("Message " + messageId + " has mismatching source currency information");
-            }
 
             // 3. Get FX Rate
             BigDecimal rate = fxRateProvider.getRate(sourceCurrency, targetCurrency)
@@ -78,7 +96,7 @@ public class FXService {
             } else {
                 storedMessage.setTargetAmt(fxtr014.getFXTradInstr().getTradAmts().getTradgSdBuyAmt().getAmt().getValue());
             }
-            storedMessage.setTargetCcy(targetCurrency);
+            storedMessage.setAmt(storedMessage.getTargetAmt().divide(rate, RoundingMode.HALF_UP));
 
             // 5. Marshal fxtr.014 to XML string
             String fxtrPayload = base64.encodeToString(jaxbMarshallingUtil.marshall(fxtr014).getBytes(StandardCharsets.UTF_8));
@@ -89,6 +107,18 @@ public class FXService {
             storedMessage.addAuditTrailItem(createAuditEntry("FX Conversion Created",
                     "Successfully created fxtr.014 message."));
             log.info("Successfully created fxtr.014 for messageId: {}", messageId);
+
+
+            if (DIGITAL_CURRENCIES.contains(sourceCurrency)) {
+                storedMessage.addAuditTrailItem(createAuditEntry("Blockchain Transaction Creation for Debitor successful",
+                        "Blockchain Transaction " + fxTransactionHash + " created on network "
+                                + storedMessage.getDebitorNetwork() + " for token " + sourceCurrency));
+            } else {
+                storedMessage.addAuditTrailItem(createAuditEntry("No Blockchain Transaction necessary",
+                        "Debitor Account is in Fiat Currency. No Blockchain transaction needed"));
+            }
+
+
             storedMessage.addAuditTrailItem(createAuditEntry("Transaction completed",
                     "Successfully completed all flows linked to this transaction."));
 
@@ -122,7 +152,7 @@ public class FXService {
         PartyIdentification242Choice tradingParty = new PartyIdentification242Choice();
         PartyIdentification266 tradingPartyId = new PartyIdentification266();
         tradingPartyId.setPtyNm(pacsTxInf.getDbtr().getNm());
-        tradingPartyId.setLglNttyIdr(pacsTxInf.getDbtr().getId().getOrgId().getLEI());
+        tradingPartyId.setLglNttyIdr(pacsTxInf.getDbtrAgt().getFinInstnId().getLEI());
         tradingParty.setPtyId(tradingPartyId);
         tradingSide.setSubmitgPty(tradingParty);
         fxTrade.setTradgSdId(tradingSide);
@@ -132,15 +162,15 @@ public class FXService {
         PartyIdentification242Choice counterparty = new PartyIdentification242Choice();
         PartyIdentification266 counterpartyId = new PartyIdentification266();
         counterpartyId.setPtyNm(pacsTxInf.getCdtr().getNm());
-        counterpartyId.setLglNttyIdr(pacsTxInf.getCdtr().getId().getOrgId().getLEI());
+        counterpartyId.setLglNttyIdr(pacsTxInf.getCdtrAgt().getFinInstnId().getLEI());
         counterparty.setPtyId(counterpartyId);
         counterpartySide.setSubmitgPty(counterparty);
         fxTrade.setCtrPtySdId(counterpartySide);
 
         // --- Amounts ---
         AmountsAndValueDate8 amounts = new AmountsAndValueDate8();
-        BigDecimal sourceAmount = pacsTxInf.getIntrBkSttlmAmt().getValue();
-        BigDecimal targetAmount = sourceAmount.multiply(rate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal targetAmount = pacsTxInf.getIntrBkSttlmAmt().getValue();
+        BigDecimal sourceAmount = targetAmount.divide(rate, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
 
         amounts.setTradgSdSellAmt(createCurrencyOrDigitalTokenAmount(sourceCcy, sourceAmount));
         amounts.setTradgSdBuyAmt(createCurrencyOrDigitalTokenAmount(targetCcy, targetAmount));

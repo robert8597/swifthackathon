@@ -82,15 +82,14 @@ public class VerificationService {
     private StoredMessage verifySingleLei(StoredMessage message, String party) {
         String lei;
         String bic;
-        String legalName;
         if (party.equals(DEBITOR)) {
-            lei = message.getDebitorLEI();
-            bic = message.getDebitorBIC();
-            legalName = message.getDebitorLegalName();
+            lei = message.getDebitorAgentLEI();
+            bic = message.getDebitorAgentBIC();
+
         } else if (party.equals(CREDITOR)) {
-            lei = message.getCreditorLEI();
-            bic = message.getCreditorBIC();
-            legalName = message.getCreditorLegalName();
+            lei = message.getCreditorAgentLEI();
+            bic = message.getCreditorAgentBIC();
+
         } else {
             log.warn("Unknown Party. Please check");
             message.addAuditTrailItem(createAuditEntry("Verification failed", "Party" + party + "is unknown!"));
@@ -132,12 +131,6 @@ public class VerificationService {
                 return verificationStatusSetter(message, party, VerificationStatus.FAILED);
             }
 
-            if (!legalName.equalsIgnoreCase(gleifEntityLegalName)) {
-                log.warn("Passed legal name was {}, but LEI-assigned legal name is {}", legalName, gleifEntityLegalName);
-                message.addAuditTrailItem(createAuditEntry("Verification failed", "LEI-assigned legal name " + gleifEntityLegalName +
-                        " does not match passed legal name " + legalName));
-                return verificationStatusSetter(message, party, VerificationStatus.FAILED);
-            }
 
             if (!gleifEntityBic.contains(bic)) {
                 log.warn("Passed BIC was {}, but LEI-assigned BICs are {}", bic, gleifEntityBic);
@@ -146,6 +139,12 @@ public class VerificationService {
                 return verificationStatusSetter(message, party, VerificationStatus.FAILED);
             }
 
+            if (party.equals(DEBITOR)) {
+                message.setDebitorAgentLegalName(gleifEntityLegalName);
+
+            } else {
+                message.setCreditorAgentLegalName(gleifEntityLegalName);
+            }
             return verificationStatusSetter(message, party, VerificationStatus.VERIFIED);
 
 
