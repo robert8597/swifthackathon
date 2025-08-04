@@ -115,32 +115,53 @@ components:
         messageId:
           type: string
           description: The unique identifier for the message.
-        debitorLegalName:
+        debitorAgentLegalName:
           type: string
           description: Legal Name of Debitor
-        creditorLegalName:
+        creditorAgentLegalName:
           type: string
           description: Legal Name of Creditor
-        creditorBIC:
+        creditorAgentBIC:
           type: string
           description: BIC of Creditor
-        debitorBIC:
+        debitorAgentBIC:
           type: string
           description: BIC of Debitor
-        creditorLEI:
+        creditorAgentLEI:
           type: string
           description: The LEI of the creditor.
-        debitorLEI:
+        debitorAgentLEI:
           type: string
           description: The LEI of the debitor.
         ccy:
           type: string
-          description: The currency of the transaction.
+          description: The currency/token of the transaction.
           example: "EUR"
         amt:
           type: number
           format: double
           description: The amount of the transaction.
+        debitorNetwork:
+          type: string
+          description: The used network where the token of the debitor resides.
+        creditorNetwork:
+          type: string
+          description: The used network where the token of the creditor resides.
+        debitorWallet:
+          type: string
+          description: Wallet address of the debitor
+        creditorWallet:
+          type: string
+          description: Wallet address of the creditor
+        blckchnDetails:
+          $ref: '#/components/schemas/BlockchainTransactionDetails'
+        blckchnTransactionValidationStatus:
+          type: string
+          enum:
+            - PENDING
+            - SKIPPED
+            - FAILED
+            - VALIDATED
         timestamp:
           type: string
           format: date-time
@@ -159,7 +180,7 @@ components:
           description: Base64 encoded FX Trade Message created from the original message
         targetCcy:
           type: string
-          description: The target currency of the transaction.
+          description: The target currency/token of the transaction.
           example: "USDT"
         targetAmt:
           type: number
@@ -183,6 +204,7 @@ components:
             - RECEIVED
             - LEI VERIFICATION IN PROGRESS
             - FX MESSAGE CREATION IN PROGRESS
+            - BLOCKCHAIN TXN VALIDATION IN PROGRESS
             - COMPLETED
             - FAILED
         auditTrail:
@@ -205,3 +227,13 @@ components:
         details:
           type: string
           description: Optional details about the action (e.g., error messages).
+    BlockchainTransactionDetails:
+      type: object
+      description: Details of the Blockchain Transaction
+      properties:
+        network:
+          type: string
+        txId:
+          type: string
+        token:
+          type: string

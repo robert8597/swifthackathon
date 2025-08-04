@@ -2,10 +2,7 @@ package com.db.swift.dfx.service.controller;
 
 import com.db.swift.dfx.jaxb.model.pacs008.Document;
 import com.db.swift.dfx.openapi.api.PostMessageApi;
-import com.db.swift.dfx.openapi.model.AuditTrailEntry;
-import com.db.swift.dfx.openapi.model.MessageResponse;
-import com.db.swift.dfx.openapi.model.PostMessageRequest;
-import com.db.swift.dfx.openapi.model.StoredMessage;
+import com.db.swift.dfx.openapi.model.*;
 import com.db.swift.dfx.service.events.MessageStoredEvent;
 import com.db.swift.dfx.service.services.MessageStorageService;
 import com.db.swift.dfx.service.utils.JaxbMarshallingUtil;
@@ -21,15 +18,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.xml.sax.SAXException;
 
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
 
-import static com.db.swift.dfx.service.constants.DfxConstants.DB_LEGAL_NAME;
-import static com.db.swift.dfx.service.constants.DfxConstants.FX_PATTERN;
+import static com.db.swift.dfx.service.constants.DfxConstants.*;
 
 @RestController
 @Slf4j
@@ -59,45 +56,57 @@ public class PostMessageApiImpl implements PostMessageApi {
                     build()
             );
 
-            Document payload = jaxbMarshallingUtil.unmarshall(new String(base64.decode(postMessageRequest.getPayload())), Document.class, "/xsd/pacs.008.001.09.xsd");
+            Document payload = jaxbMarshallingUtil.unmarshall(new String(base64.decode(postMessageRequest.getPayload())), Document.class, "/xsd/pacs.008.001.14.xsd");
             Set<ConstraintViolation<Document>> violations = validator.validate(payload);
             if (!violations.isEmpty()) {
                 throw new ConstraintViolationException(violations);
             }
 
-            String remittanceInfo = payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
-
-            Matcher matcher = FX_PATTERN.matcher(remittanceInfo);
-            if (!matcher.find()) {
-                throw new IllegalStateException("Could not parse source/target currency from remittance info: " + remittanceInfo);
-            }
-            String sourceCurrency = matcher.group(1);
-            String targetCurrency = matcher.group(2);
-
-            if (payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy().equals("XXX")) {
-                log.info("Message {} has a digital token as source currency", messageId);
-            } else if (!payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy().equals(sourceCurrency)) {
-                throw new IllegalStateException("Message " + messageId + " has mismatching source currency information");
-            }
-
             StoredMessage storedMessage = StoredMessage.builder()
                     .messageId(messageId.toString())
                     .timestamp(receivedTimestamp)
-                    .creditorLegalName(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm())
-                    .creditorBIC(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getBICFI())
-                    .creditorLEI(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getLEI())
-                    .debitorLegalName(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtr().getNm())
-                    .debitorBIC(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAgt().getFinInstnId().getBICFI())
-                    .debitorLEI(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getLEI())
-                    .ccy(sourceCurrency)
-                    .amt(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue())
-                    .targetCcy(targetCurrency)
+                    .creditorAgentBIC(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getBICFI())
+                    .creditorAgentLEI(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getLEI())
+                    .debitorAgentBIC(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAgt().getFinInstnId().getBICFI())
+                    .debitorAgentLEI(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAgt().getFinInstnId().getLEI())
                     .direction(getDirectionEnum(payload))
                     .payload(postMessageRequest.getPayload())
                     .transactionStatus(StoredMessage.TransactionStatusEnum.RECEIVED)
                     .auditTrail(auditTrail)
                     .build();
 
+            if (payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getTokenId() != null ) {
+                storedMessage.setDebitorWallet(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getWalletId().getDbtrWalletAddr());
+                storedMessage.setDebitorNetwork(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getWalletNtwrk().getDbtrWalletNtwrk());
+                storedMessage.setCcy(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getTokenId());
+            } else {
+                storedMessage.setCcy(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getCcy());
+            }
+
+            if (payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getTokenId() != null ) {
+                storedMessage.setCreditorWallet(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getWalletId().getCdtrWalletAddr());
+                storedMessage.setCreditorNetwork(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getWalletNtwrk().getCdtrWalletNtwrk());
+                storedMessage.setTargetCcy(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getTokenId());
+            } else {
+                storedMessage.setTargetCcy(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getCcy());
+            }
+            storedMessage.setTargetAmt(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+
+            if (storedMessage.getDirection().equals(StoredMessage.DirectionEnum.INBOUND)) {
+                storedMessage.setFxTradeDate(LocalDate.now());
+                storedMessage.setAmt(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getInstdAmt().getValue());
+                storedMessage.setFxRate(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue()
+                                .divide(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getInstdAmt().getValue(), RoundingMode.HALF_UP)
+                        );
+            }
+
+            BlockchainTransactionDetails blockchainTransactionDetails =
+                    BlockchainTransactionDetails.builder()
+                            .network(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getWalletNtwrk().getDbtrWalletNtwrk())
+                            .token(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getTokenId())
+                            .txId(payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getTxHash())
+                            .build();
+            storedMessage.setBlckchnDetails(blockchainTransactionDetails);
             messageStorageService.storeMessage(storedMessage);
             eventPublisher.publishEvent(new MessageStoredEvent(this, messageId.toString()));
             MessageResponse response = MessageResponse.builder()
@@ -110,7 +119,7 @@ public class PostMessageApiImpl implements PostMessageApi {
         }
         catch (JAXBException | SAXException | ConstraintViolationException e) {
             // IMPROVEMENT: Unified exception handling for better readability.
-            log.error("Failed to process outgoing message with ID: {}. Reason: {}", messageId, e.getMessage());
+            log.error("Failed to process outgoing message with ID: {}. Reason: {}", messageId, e.toString());
             MessageResponse response = MessageResponse.builder()
                     .success(false)
                     .messageReference(messageId.toString())
@@ -122,9 +131,9 @@ public class PostMessageApiImpl implements PostMessageApi {
 
     private static StoredMessage.DirectionEnum getDirectionEnum(Document payload) {
         StoredMessage.DirectionEnum msgDirection;
-        if (payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm().equals(DB_LEGAL_NAME)) {
+        if (payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getBICFI().equals("DEUTDEFFXXX")) {
             msgDirection = StoredMessage.DirectionEnum.INBOUND;
-        } else if (payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtr().getNm().equals(DB_LEGAL_NAME)) {
+        } else if (payload.getFIToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAgt().getFinInstnId().getBICFI().equals("DEUTDEFFXXX")) {
             msgDirection = StoredMessage.DirectionEnum.OUTBOUND;
         } else {
             throw new IllegalStateException(DB_LEGAL_NAME + " is neither Debitor nor Creditor Agent. Aborting...");

@@ -1,8 +1,8 @@
 package com.db.swift.dfx.service.listeners;
 
+import com.db.swift.dfx.service.events.BlockchainValidationSuccessfulEvent;
 import com.db.swift.dfx.service.services.FXService;
 import lombok.extern.slf4j.Slf4j;
-import com.db.swift.dfx.service.events.LEIVerificationSuccessfulEvent;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -25,13 +25,13 @@ public class FXRateListener {
      */
     @Async
     @EventListener
-    public void handleLEIVerificationSuccessful(LEIVerificationSuccessfulEvent event) {
-        log.info("Asynchronously handling FX rate creation for messageId: {}", event.getMessageId());
+    public void handleFxRateCreation(BlockchainValidationSuccessfulEvent event) {
+        log.info("Asynchronously handling FX conversion creation for messageId: {}", event.getMessageId());
         try {
             fxService.handleFxTradeCreation(event.getMessageId());
         } catch (Exception e) {
             // Catching all exceptions to prevent the async thread from dying silently.
-            log.error("An unexpected error occurred during asynchronous FX rate retrieval for messageId: {}", event.getMessageId(), e);
+            log.error("An unexpected error occurred during asynchronous FX conversion creation for messageId: {}", event.getMessageId(), e);
         }
 
     }
